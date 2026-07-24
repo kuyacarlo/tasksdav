@@ -37,6 +37,19 @@ async def lifespan(_app: FastAPI):
     yield
 
 
+def _repo_root() -> Path | None:
+    here = Path(__file__).resolve()
+    for root in (here.parents[2], here.parents[1].parent, Path("/")):
+        if (root / "brand").is_dir() and (root / "frontend" / "index.html").is_file():
+            return root
+        if (root / "brand").is_dir():
+            return root
+    brand_only = Path(__file__).resolve().parents[2]
+    if (brand_only / "brand").is_dir():
+        return brand_only
+    return None
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
@@ -47,6 +60,10 @@ def create_app() -> FastAPI:
     @app.get("/api/health")
     async def health() -> dict[str, str]:
         return {"status": "ok", "app": settings.app_name}
+
+    repo = _repo_root()
+    if repo is not None and (repo / "brand").is_dir():
+        app.mount("/brand", StaticFiles(directory=repo / "brand"), name="brand")
 
     frontend = _find_frontend()
     if frontend is not None:

@@ -7,7 +7,7 @@
     "api/index.py": {
       "maxDuration": 60,
       "memory": 1024,
-      "includeFiles": "{frontend/**,backend/app/**}"
+      "includeFiles": "{frontend/**,backend/app/**,brand/**}"
     }
   }
 }

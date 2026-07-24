@@ -2,7 +2,7 @@
 
 CalDAV façade over **Google Tasks** (source of truth). Connect Google → copy URL → use Errands / Apple Reminders / DAVx5.
 
-See [SPEC.md](./SPEC.md) for the contract. Multi-tenant security notes: [docs/security.md](./docs/security.md).
+See [SPEC.md](./SPEC.md) for the contract. Multi-tenant security notes: [docs/security.md](./docs/security.md). Brand: [DESIGN.md](./DESIGN.md).
 
 ## Quick start (Compose)
 

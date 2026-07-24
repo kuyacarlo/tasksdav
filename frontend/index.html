@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TasksDAV</title>
+    <link rel="icon" href="/brand/logo-mark.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,11 +38,22 @@
         margin: 0 auto;
         padding: 4.5rem 1.25rem 3rem;
       }
+      .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin: 0 0 0.4rem;
+      }
+      .brand-row img {
+        width: clamp(2.6rem, 7vw, 3.2rem);
+        height: clamp(2.6rem, 7vw, 3.2rem);
+        border-radius: 14px;
+      }
       .brand {
         font-size: clamp(2.4rem, 6vw, 3.4rem);
         font-weight: 700;
         letter-spacing: -0.04em;
-        margin: 0 0 0.4rem;
+        margin: 0;
       }
       .brand span { color: var(--accent); }
       .lede {
