@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: tasksdav
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tasksdav}
+      POSTGRES_DB: tasksdav
+    ports:
+      - "5432:5432"
+    volumes:
+      - tasksdav_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tasksdav -d tasksdav"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      BASE_URL: ${BASE_URL:-http://127.0.0.1:8080}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://tasksdav:${POSTGRES_PASSWORD:-tasksdav}@db:5432/tasksdav}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID is required}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?GOOGLE_CLIENT_SECRET is required}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  tasksdav_pg:

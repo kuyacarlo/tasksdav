@@ -1,0 +1,15 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY backend/pyproject.toml backend/uv.lock ./
+COPY backend/app ./app
+COPY frontend /frontend
+
+RUN pip install --no-cache-dir uv \
+  && uv sync --frozen --no-dev
+
+ENV PATH="/app/.venv/bin:$PATH"
+EXPOSE 8080
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
