@@ -2,12 +2,10 @@ import base64
 import hashlib
 import secrets
 
+import bcrypt
 from cryptography.fernet import Fernet
-from passlib.context import CryptContext
 
 from app.core.config import get_settings
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def _fernet() -> Fernet:
@@ -24,11 +22,14 @@ def decrypt_token(token_enc: str) -> str:
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("ascii")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("ascii"))
+    except (ValueError, TypeError):
+        return False
 
 
 def new_caldav_password() -> str:

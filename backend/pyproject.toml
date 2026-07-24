@@ -14,7 +14,7 @@ dependencies = [
   "asyncpg>=0.30",
   "pydantic-settings>=2.7",
   "python-multipart>=0.0.20",
-  "passlib[bcrypt]>=1.7",
+  "bcrypt>=4.2",
   "icalendar>=6.0",
   "cryptography>=44.0",
 ]

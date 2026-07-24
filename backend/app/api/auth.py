@@ -52,9 +52,19 @@ async def google_callback(
     if error:
         raise HTTPException(status_code=400, detail=error)
     if not code or state != request.session.get("oauth_state"):
-        raise HTTPException(status_code=400, detail="Invalid OAuth state")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid OAuth state — start again from Connect Google Tasks",
+        )
 
-    tokens = await exchange_code(code)
+    try:
+        tokens = await exchange_code(code)
+    except Exception as exc:  # noqa: BLE001 — surface Google errors to the client
+        raise HTTPException(
+            status_code=400,
+            detail=f"Google token exchange failed (code may be reused). Click Connect again. ({exc})",
+        ) from exc
+
     access = tokens["access_token"]
     refresh = tokens.get("refresh_token")
     info = await fetch_userinfo(access)
