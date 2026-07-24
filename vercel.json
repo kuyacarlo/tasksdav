@@ -10,11 +10,5 @@
       "maxDuration": 60,
       "includeFiles": "{backend/app/**}"
     }
-  },
-  "crons": [
-    {
-      "path": "/api/health",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  }
 }
