@@ -8,16 +8,15 @@ from fastapi.staticfiles import StaticFiles
 from app.api import auth
 from app.caldav.router import router as caldav_router
 from app.core.config import get_settings
-from app.db.session import init_db
 
 
 def _frontend_roots() -> list[Path]:
     here = Path(__file__).resolve()
     return [
-        here.parents[2] / "frontend",  # repo layout: tasksdav/frontend
+        here.parents[2] / "public",
+        here.parents[2] / "frontend",
         Path("/frontend"),
         here.parents[1] / "frontend",
-        Path(__file__).resolve().parents[1].parent / "frontend",
     ]
 
 
@@ -31,23 +30,18 @@ def _find_frontend() -> Path | None:
     return None
 
 
-@asynccontextmanager
-async def lifespan(_app: FastAPI):
-    await init_db()
-    yield
-
-
 def _repo_root() -> Path | None:
     here = Path(__file__).resolve()
-    for root in (here.parents[2], here.parents[1].parent, Path("/")):
-        if (root / "brand").is_dir() and (root / "frontend" / "index.html").is_file():
+    for root in (here.parents[2], here.parents[1].parent):
+        if (root / "brand").is_dir() or (root / "public" / "brand").is_dir():
             return root
-        if (root / "brand").is_dir():
-            return root
-    brand_only = Path(__file__).resolve().parents[2]
-    if (brand_only / "brand").is_dir():
-        return brand_only
     return None
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # Do not touch Neon here — free tier autosuspend makes lifespan DB I/O a cold-start tax.
+    yield
 
 
 def create_app() -> FastAPI:
@@ -59,11 +53,18 @@ def create_app() -> FastAPI:
 
     @app.get("/api/health")
     async def health() -> dict[str, str]:
+        # Keep-warm ping only — no DB so Neon can stay asleep until real use.
         return {"status": "ok", "app": settings.app_name}
 
     repo = _repo_root()
-    if repo is not None and (repo / "brand").is_dir():
-        app.mount("/brand", StaticFiles(directory=repo / "brand"), name="brand")
+    brand_dir = None
+    if repo is not None:
+        if (repo / "public" / "brand").is_dir():
+            brand_dir = repo / "public" / "brand"
+        elif (repo / "brand").is_dir():
+            brand_dir = repo / "brand"
+    if brand_dir is not None:
+        app.mount("/brand", StaticFiles(directory=brand_dir), name="brand")
 
     frontend = _find_frontend()
     if frontend is not None:

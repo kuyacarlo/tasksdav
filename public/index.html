@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TasksDAV</title>
+    <link rel="icon" href="/brand/logo-mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg0: #0f1412;
+        --bg1: #1a2420;
+        --ink: #e8f0ea;
+        --muted: #8fa396;
+        --accent: #3dba7a;
+        --accent-dim: #2a7a52;
+        --line: #2c3a33;
+        --warn: #e6b35a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "DM Sans", system-ui, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(1200px 600px at 10% -10%, #1e3d2f 0%, transparent 55%),
+          radial-gradient(900px 500px at 100% 0%, #243028 0%, transparent 50%),
+          var(--bg0);
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 4.5rem 1.25rem 3rem;
+      }
+      .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin: 0 0 0.4rem;
+      }
+      .brand-row img {
+        width: clamp(2.6rem, 7vw, 3.2rem);
+        height: clamp(2.6rem, 7vw, 3.2rem);
+        border-radius: 14px;
+      }
+      .brand {
+        font-size: clamp(2.4rem, 6vw, 3.4rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        margin: 0;
+      }
+      .brand span { color: var(--accent); }
+      .lede {
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.5;
+        margin: 0 0 2rem;
+        max-width: 32rem;
+      }
+      .card {
+        background: color-mix(in srgb, var(--bg1) 88%, black);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.25rem 1.35rem;
+      }
+      .row {
+        display: grid;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+      }
+      label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .value {
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+      }
+      code, .mono {
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+        font-size: 0.85rem;
+      }
+      .field {
+        flex: 1;
+        background: var(--bg0);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0.7rem 0.8rem;
+        color: var(--ink);
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      button, .btn {
+        appearance: none;
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #04140c;
+        font-weight: 600;
+        font-family: inherit;
+        padding: 0.7rem 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      button.secondary {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      button:hover, .btn:hover { filter: brightness(1.05); }
+      .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+      .note {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+      .warn { color: var(--warn); }
+      .hidden { display: none; }
+      .status { margin-bottom: 1rem; color: var(--muted); font-size: 0.95rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand-row">
+        <img src="/brand/logo-mark.svg" width="52" height="52" alt="" />
+        <h1 class="brand">Tasks<span>DAV</span></h1>
+      </div>
+      <p class="lede">
+        Connect Google Tasks once. Copy a CalDAV URL into Errands, Apple Reminders, or DAVx5.
+        Google stays the source of truth.
+      </p>
+
+      <div id="loading" class="status">Checking connection…</div>
+
+      <section id="disconnected" class="card hidden">
+        <p class="status" style="margin:0 0 1rem">Not connected.</p>
+        <a class="btn" href="/auth/google">Connect Google Tasks</a>
+        <p class="note">
+          Needs a Google Cloud OAuth client with the Tasks scope. See <span class="mono">.env.example</span>.
+        </p>
+      </section>
+
+      <section id="connected" class="card hidden">
+        <p class="status">Connected as <strong id="email"></strong></p>
+
+        <div class="row">
+          <label>CalDAV URL</label>
+          <div class="value">
+            <div class="field mono" id="caldav_url"></div>
+            <button type="button" data-copy="caldav_url">Copy</button>
+          </div>
+        </div>
+        <div class="row">
+          <label>Username</label>
+          <div class="value">
+            <div class="field mono" id="caldav_username"></div>
+            <button type="button" data-copy="caldav_username">Copy</button>
+          </div>
+        </div>
+        <div class="row">
+          <label>App password</label>
+          <div class="value">
+            <div class="field mono" id="caldav_password">••••••••</div>
+            <button type="button" data-copy="caldav_password">Copy</button>
+          </div>
+        </div>
+        <p id="pw-note" class="note warn hidden">
+          Password is shown once. Copy it now, or rotate to mint a new one.
+        </p>
+        <div class="actions">
+          <button type="button" id="rotate" class="secondary">Rotate password</button>
+          <button type="button" id="logout" class="secondary">Log out</button>
+        </div>
+        <p class="note">
+          In Errands: add CalDAV account → paste URL → username + app password.
+          Due dates are <strong>date-only</strong> (Google API limit).
+        </p>
+      </section>
+    </main>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      let passwordValue = null;
+
+      async function loadMe() {
+        $("loading").classList.remove("hidden");
+        $("disconnected").classList.add("hidden");
+        $("connected").classList.add("hidden");
+        try {
+          const r = await fetch("/api/me");
+          if (r.status === 401) {
+            $("loading").classList.add("hidden");
+            $("disconnected").classList.remove("hidden");
+            return;
+          }
+          if (!r.ok) throw new Error(await r.text());
+          const me = await r.json();
+          $("email").textContent = me.email;
+          $("caldav_url").textContent = me.caldav_url;
+          $("caldav_username").textContent = me.caldav_username;
+          if (me.caldav_password) {
+            passwordValue = me.caldav_password;
+            $("caldav_password").textContent = me.caldav_password;
+            $("pw-note").classList.remove("hidden");
+          } else {
+            passwordValue = null;
+            $("caldav_password").textContent = "(hidden — rotate to reveal a new one)";
+            $("pw-note").classList.add("hidden");
+          }
+          $("loading").classList.add("hidden");
+          $("connected").classList.remove("hidden");
+        } catch (e) {
+          $("loading").textContent = "Failed to load: " + e.message;
+        }
+      }
+
+      document.querySelectorAll("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const key = btn.getAttribute("data-copy");
+          let text = $(key).textContent;
+          if (key === "caldav_password") text = passwordValue || "";
+          if (!text || text.startsWith("(")) return;
+          await navigator.clipboard.writeText(text);
+          const prev = btn.textContent;
+          btn.textContent = "Copied";
+          setTimeout(() => (btn.textContent = prev), 1200);
+        });
+      });
+
+      $("rotate").addEventListener("click", async () => {
+        const r = await fetch("/api/me/rotate-password", { method: "POST" });
+        if (!r.ok) return alert("Rotate failed");
+        const me = await r.json();
+        passwordValue = me.caldav_password;
+        $("caldav_password").textContent = me.caldav_password;
+        $("pw-note").classList.remove("hidden");
+      });
+
+      $("logout").addEventListener("click", async () => {
+        await fetch("/api/logout", { method: "POST" });
+        location.reload();
+      });
+
+      loadMe();
+    </script>
+  </body>
+</html>

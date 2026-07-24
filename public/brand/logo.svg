@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 80" role="img" aria-label="TasksDAV">
+  <!-- mark -->
+  <g transform="translate(0 8)">
+    <rect width="64" height="64" rx="14" fill="#1A2420"/>
+    <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="#2C3A33" stroke-width="1.5"/>
+    <path d="M20 22h10M20 32h16M20 42h12" stroke="#8FA396" stroke-width="3" stroke-linecap="round"/>
+    <path d="M38 24l5 5 9-11" fill="none" stroke="#3DBA7A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M44 40c4.5 0 8 3 8 7.5S48.5 55 44 55" fill="none" stroke="#3DBA7A" stroke-width="3" stroke-linecap="round"/>
+    <path d="M49.5 51.5L44 55l1.2-6" fill="none" stroke="#3DBA7A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- wordmark -->
+  <text x="84" y="54" font-family="DM Sans, system-ui, sans-serif" font-size="44" font-weight="700" letter-spacing="-1.6" fill="#E8F0EA">Tasks</text>
+  <text x="228" y="54" font-family="DM Sans, system-ui, sans-serif" font-size="44" font-weight="700" letter-spacing="-1.6" fill="#3DBA7A">DAV</text>
+</svg>
